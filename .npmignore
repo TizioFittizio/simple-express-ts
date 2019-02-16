@@ -1,4 +1,5 @@
 lib/
+tests/
 .gitignore
 jest.config.js
 readme.md
