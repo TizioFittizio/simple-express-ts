@@ -5,7 +5,7 @@ import express = require('express');
  */
 export abstract class SimpleExpressServer {
 
-    protected abstract middlewares: any[];
+    protected abstract middlewares: Array<(app: express.Express) => void>;
     protected abstract controllers: any[];
 
     private _app: express.Express;
@@ -20,19 +20,21 @@ export abstract class SimpleExpressServer {
     }
 
     public start(onStart?: () => void): Promise<void>{
-        return new Promise(async () => {
+        return new Promise(resolve => {
             this.server = this._app.listen(this.port, () => {
                 if (onStart) onStart();
                 else console.log(`Server started on port ${this.port}`);
+                resolve();
             });
         });
     }
 
     public async stop(onStop?: () => void): Promise<void>{
-        return new Promise(async () => {
+        return new Promise(async (resolve) => {
             if (!this.server) console.warn('Server was not started');
             else await this.server.close();
             if (onStop) onStop();
+            resolve();
         });
     }
 

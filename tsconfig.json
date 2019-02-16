@@ -4,8 +4,6 @@
       "module": "commonjs",
       "declaration": true,
       "outDir": "./dist",
-      "rootDir": "./lib",
       "strict": true
-    },
-    "exclude": ["tests"]
+    }
 }
