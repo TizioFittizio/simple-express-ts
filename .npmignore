@@ -1,2 +1,7 @@
 lib/
 .gitignore
+jest.config.js
+readme.md
+tslint.json
+yarn-error.log
+yarn.lock
