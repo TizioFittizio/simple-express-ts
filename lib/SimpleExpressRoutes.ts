@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 export interface SimpleExpressRoute {
-    httpMethod: 'get' | 'post';
+    httpMethod: 'get' | 'post' | 'put' | 'delete';
     endpoint: string;
     action: (req: Request, res: Response) => void;
 }
@@ -23,10 +23,6 @@ export class SimpleExpressRoutes {
 
     public addRoute(route: SimpleExpressRoute){
         this._routes.push(route);
-    }
-
-    public clearRoutes(){
-        this._routes = [];
     }
 
     public get routes(){

@@ -1,22 +1,19 @@
 import { SimpleExpressServer } from '../lib/SimpleExpressServer';
-import { SimpleExpressController, Get } from '../lib/SimpleExpressController';
+import { SimpleExpressController } from '../lib/SimpleExpressController';
 import { Request, Response } from 'express';
 import * as request from 'supertest';
+import { Get, Post } from '../lib/SimpleExpressDecorators';
+import bodyParser = require('body-parser');
 
 // tslint:disable:max-classes-per-file
 
 describe('When started', () => {
 
-    class TestServer extends SimpleExpressServer {
-        protected middlewares = [];
-        protected controllers = [];
-    }
-
     let started = false;
-    let server: TestServer;
+    let server: SimpleExpressServer;
 
     beforeAll(async () => {
-        server = new TestServer(1337);
+        server = new SimpleExpressServer(1337);
         await server.start(() => started = true);
     });
 
@@ -42,35 +39,47 @@ describe('With a controller', () => {
 
         public controllerRoute: string = '/test';
 
-        @Get('/test')
+        @Get('/testget')
         private async getTest(req: Request, res: Response){
             res.send([]);
         }
+
+        @Post('/testpost')
+        private async postTest(req: Request, res: Response){
+            res.status(201).send(req.body);
+        }
+
     }
 
-    class TestServer extends SimpleExpressServer {
-        protected middlewares = [];
-        protected controllers = [TestController];
-    }
-
-    let server: TestServer;
+    let server: SimpleExpressServer;
 
     beforeAll(async () => {
-        server = new TestServer(1337);
+        server = new SimpleExpressServer(1337, bodyParser.json());
         await server.start();
     });
 
     afterAll(async () => {
-        await server.stop();
+        await server.stop(() => { /* */ });
     });
 
     it('should call get route correctly', done => {
         request(server.app)
-            .get('/test/test')
+            .get('/test/testget')
             .expect(res => {
                 expect(res.body).toBeTruthy();
             })
             .expect(200)
+            .end(done);
+    });
+
+    it('should call post route correctly', done => {
+        request(server.app)
+            .post('/test/testpost')
+            .send({ a: 1 })
+            .expect(res => {
+                expect(res.body.a).toBe(1);
+            })
+            .expect(201)
             .end(done);
     });
 

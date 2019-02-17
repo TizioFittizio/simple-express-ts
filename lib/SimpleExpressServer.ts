@@ -1,19 +1,19 @@
 import express = require('express');
+import { RequestHandler } from 'express';
 import { SimpleExpressRoutes } from './SimpleExpressRoutes';
 
-/**
- * This is an abstract class for writing your express server class implementation
- */
-export abstract class SimpleExpressServer {
+// TODO creare un server builder che prende controller e middleware
+export class SimpleExpressServer {
 
-    protected abstract middlewares: Array<(app: express.Express) => void>;
+    private middlewares: RequestHandler[];
 
     private _app: express.Express;
     private port: number;
     private server: any;
 
-    constructor(port: number){
+    constructor(port: number, middlewares?: RequestHandler | RequestHandler[]){
         this.port = port;
+        this.middlewares = middlewares ? Array.isArray(middlewares) ? middlewares : [middlewares] : [];
         this._app = express();
         this.loadMiddlewares();
         this.loadRoutes();
@@ -43,13 +43,15 @@ export abstract class SimpleExpressServer {
     }
 
     private loadMiddlewares(){
-        // TODO
+        for (const middleware of this.middlewares){
+            this._app.use(middleware);
+        }
     }
 
     private loadRoutes(){
         for (const { httpMethod, endpoint, action } of SimpleExpressRoutes.instance.routes){
             const middlewares: any[] = [];
-            this._app[httpMethod](endpoint, ...middlewares, action);
+            this._app[httpMethod](endpoint, ...middlewares, action).bind(this);
         }
     }
 
