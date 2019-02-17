@@ -1,6 +1,6 @@
 import express = require('express');
 import { RequestHandler } from 'express';
-import { SimpleExpressRoutes } from './SimpleExpressRoutes';
+import { SimpleExpressData } from './SimpleExpressData';
 
 // TODO creare un server builder che prende controller e middleware
 export class SimpleExpressServer {
@@ -49,9 +49,10 @@ export class SimpleExpressServer {
     }
 
     private loadRoutes(){
-        for (const { httpMethod, endpoint, action } of SimpleExpressRoutes.instance.routes){
-            const middlewares: any[] = [];
-            this._app[httpMethod](endpoint, ...middlewares, action).bind(this);
+        for (const { route, middlewares } of SimpleExpressData.instance.routes){
+            if (!route) throw new Error('Declared a method with middleware but without http verb');
+            const { httpMethod, endpoint, action } = route;
+            this._app[httpMethod](endpoint, ...middlewares || [], action).bind(this);
         }
     }
 

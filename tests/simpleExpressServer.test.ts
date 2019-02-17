@@ -2,7 +2,7 @@ import { SimpleExpressServer } from '../lib/SimpleExpressServer';
 import { SimpleExpressController } from '../lib/SimpleExpressController';
 import { Request, Response } from 'express';
 import * as request from 'supertest';
-import { Get, Post, Put, Delete } from '../lib/SimpleExpressDecorators';
+import { Get, Post, Put, Delete, Middleware } from '../lib/SimpleExpressDecorators';
 import bodyParser = require('body-parser');
 
 // tslint:disable:max-classes-per-file
@@ -33,7 +33,7 @@ describe('When started', () => {
 
 });
 
-describe('With a controller', () => {
+describe('With routes', () => {
 
     class TestController extends SimpleExpressController {
 
@@ -57,6 +57,23 @@ describe('With a controller', () => {
         @Delete('/testdelete')
         private async deleteTest(req: Request, res: Response){
             res.send(req.query.id);
+        }
+
+        @Get('/testmiddleware')
+        @Middleware((req, res, next) => {
+            (req as any).value = '1';
+            next();
+        })
+        private async middlewareTest(req: Request, res: Response){
+            res.send((req as any).value);
+        }
+
+        @Get('/testmiddleware2')
+        @Middleware((req, res, next) => {
+            res.sendStatus(401);
+        })
+        private async middlewareTest2(req: Request, res: Response){
+            res.sendStatus(200);
         }
 
     }
@@ -110,6 +127,22 @@ describe('With a controller', () => {
                 expect(res.text).toBe('1');
             })
             .expect(200)
+            .end(done);
+    });
+
+    it('should get a value from middleware', done => {
+        request(server.app)
+            .get('/test/testmiddleware')
+            .expect(res => {
+                expect(res.text).toBe('1');
+            })
+            .end(done);
+    });
+
+    it('should be able to obtain a response from middleware', done => {
+        request(server.app)
+            .get('/test/testmiddleware2')
+            .expect(401)
             .end(done);
     });
 

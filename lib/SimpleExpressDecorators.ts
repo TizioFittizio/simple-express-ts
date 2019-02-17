@@ -1,17 +1,23 @@
-import { SimpleExpressRoutes } from './SimpleExpressRoutes';
+import { SimpleExpressData, HttpMethod, ExpressMiddleware } from './SimpleExpressData';
 
 class SimpleExpressDecoratorHttpMethodFactory {
 
-    public static create(httpMethod: 'get' | 'post' | 'put' | 'delete', route: string){
+    public static create(httpMethod: HttpMethod, routeEndpoint: string){
         return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
             const controllerRoute = target.constructor().controllerRoute;
-            SimpleExpressRoutes.instance.addRoute({
+            const routeIdentifier = {
+                controller: controllerRoute,
+                method: propertyKey
+            };
+            const route = {
                 httpMethod,
-                endpoint: `${controllerRoute}${route}`,
+                endpoint: `${controllerRoute}${routeEndpoint}`,
                 action: descriptor.value
-            });
+            };
+            SimpleExpressData.instance.addRoute(routeIdentifier, route);
         };
     }
+
 }
 
 export function Get(route: string){
@@ -28,4 +34,15 @@ export function Put(route: string){
 
 export function Delete(route: string){
     return SimpleExpressDecoratorHttpMethodFactory.create('delete', route);
+}
+
+export function Middleware(middleware: ExpressMiddleware){
+    return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+        const controllerRoute = target.constructor().controllerRoute;
+        const routeIdentifier = {
+            controller: controllerRoute,
+            method: propertyKey
+        };
+        SimpleExpressData.instance.addMiddleware(routeIdentifier, middleware);
+    };
 }
