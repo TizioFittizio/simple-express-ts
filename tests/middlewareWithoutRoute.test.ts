@@ -1,9 +1,9 @@
-import { SimpleExpressController } from '../lib/SimpleExpressController';
-import { Middleware } from '../lib/SimpleExpressDecorators';
-import { SimpleExpressServer } from '../lib/SimpleExpressServer';
+import { ExpressController } from '../lib/ExpressController';
+import { Middleware } from '../lib/ExpressDecorators';
+import { ExpressServer } from '../lib/ExpressServer';
 import { Request, Response } from 'express';
 
-class TestController extends SimpleExpressController {
+class TestController extends ExpressController {
 
     public controllerRoute: string = '/test';
 
@@ -17,5 +17,5 @@ class TestController extends SimpleExpressController {
 }
 
 it('should throw starting server', async () => {
-    expect(() => new SimpleExpressServer(4000)).toThrow();
+    expect(() => new ExpressServer(4000)).toThrow();
 });

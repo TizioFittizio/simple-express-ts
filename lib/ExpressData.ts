@@ -4,24 +4,24 @@ export type HttpMethod = 'get' | 'post' | 'put' | 'delete';
 export type ExpressAction = (req: Request, res: Response) => void;
 export type ExpressMiddleware = (req: Request, res: Response, next: NextFunction) => void;
 
-export interface SimpleExpressRouteIdentifier {
+export interface ExpressRouteIdentifier {
     controller: string;
     method: string;
 }
 
-export interface SimpleExpressRoute {
+export interface ExpressRoute {
     httpMethod: HttpMethod;
     endpoint: string;
     action: ExpressAction;
 }
 
-export class SimpleExpressData {
+export class ExpressData {
 
-    private static _instance: SimpleExpressData;
+    private static _instance: ExpressData;
 
     private _routes: Array<{
-        routeIdentifier: SimpleExpressRouteIdentifier,
-        route?: SimpleExpressRoute,
+        routeIdentifier: ExpressRouteIdentifier,
+        route?: ExpressRoute,
         middlewares?: ExpressMiddleware[]
     }>;
 
@@ -30,11 +30,11 @@ export class SimpleExpressData {
     }
 
     public static get instance(){
-        if (!this._instance) this._instance = new SimpleExpressData();
+        if (!this._instance) this._instance = new ExpressData();
         return this._instance;
     }
 
-    public addRoute(routeIdentifier: SimpleExpressRouteIdentifier, route: SimpleExpressRoute){
+    public addRoute(routeIdentifier: ExpressRouteIdentifier, route: ExpressRoute){
         const routeInData = this.getRouteByIdentifier(routeIdentifier);
         if (routeInData) routeInData.route = route;
         else {
@@ -45,7 +45,7 @@ export class SimpleExpressData {
         }
     }
 
-    public addMiddleware(routeIdentifier: SimpleExpressRouteIdentifier, middleware: ExpressMiddleware){
+    public addMiddleware(routeIdentifier: ExpressRouteIdentifier, middleware: ExpressMiddleware){
         const routeInData = this.getRouteByIdentifier(routeIdentifier);
         if (routeInData){
             if (!routeInData.middlewares) routeInData.middlewares = [];
@@ -67,7 +67,7 @@ export class SimpleExpressData {
         this._routes = [];
     }
 
-    private getRouteByIdentifier({ controller, method }: SimpleExpressRouteIdentifier){
+    private getRouteByIdentifier({ controller, method }: ExpressRouteIdentifier){
         return this._routes.find(x =>
             x.routeIdentifier.controller === controller &&
             x.routeIdentifier.method === method) || null;

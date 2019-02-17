@@ -1,4 +1,4 @@
-export abstract class SimpleExpressController {
+export abstract class ExpressController {
 
     public abstract controllerRoute: string;
 

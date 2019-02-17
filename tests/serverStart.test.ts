@@ -1,10 +1,10 @@
-import { SimpleExpressServer } from '../lib/SimpleExpressServer';
+import { ExpressServer } from '../lib/ExpressServer';
 
 let started = false;
-let server: SimpleExpressServer;
+let server: ExpressServer;
 
 beforeAll(async () => {
-    server = new SimpleExpressServer(2000);
+    server = new ExpressServer(2000);
     await server.start(() => (started = true));
 });
 

@@ -1,12 +1,12 @@
-import { SimpleExpressController } from '../lib/SimpleExpressController';
+import { ExpressController } from '../lib/ExpressController';
 import { Request, Response } from 'express';
-import { Get, Post, Put, Delete, Middleware } from '../lib/SimpleExpressDecorators';
-import { SimpleExpressServer } from '../lib/SimpleExpressServer';
-import { SimpleExpressData } from '../lib/SimpleExpressData';
+import { Get, Post, Put, Delete, Middleware } from '../lib/ExpressDecorators';
+import { ExpressServer } from '../lib/ExpressServer';
+import { ExpressData } from '../lib/ExpressData';
 import * as request from 'supertest';
 import bodyParser = require('body-parser');
 
-class TestController extends SimpleExpressController {
+class TestController extends ExpressController {
 
     public controllerRoute: string = '/test';
 
@@ -49,16 +49,16 @@ class TestController extends SimpleExpressController {
 
 }
 
-let server: SimpleExpressServer;
+let server: ExpressServer;
 
 beforeAll(async () => {
-    server = new SimpleExpressServer(3000, bodyParser.urlencoded({ extended: true }), bodyParser.json());
+    server = new ExpressServer(3000, bodyParser.urlencoded({ extended: true }), bodyParser.json());
     await server.start();
 });
 
 afterAll(async () => {
     await server.stop(() => { /* */ });
-    SimpleExpressData.instance.clearRoutes();
+    ExpressData.instance.clearRoutes();
 });
 
 it('should call get route correctly', done => {

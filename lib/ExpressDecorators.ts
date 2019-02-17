@@ -1,6 +1,6 @@
-import { SimpleExpressData, HttpMethod, ExpressMiddleware } from './SimpleExpressData';
+import { ExpressData, HttpMethod, ExpressMiddleware } from './ExpressData';
 
-class SimpleExpressDecoratorHttpMethodFactory {
+class ExpressDecoratorHttpMethodFactory {
 
     public static create(httpMethod: HttpMethod, routeEndpoint: string){
         return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
@@ -14,26 +14,26 @@ class SimpleExpressDecoratorHttpMethodFactory {
                 endpoint: `${controllerRoute}${routeEndpoint}`,
                 action: descriptor.value
             };
-            SimpleExpressData.instance.addRoute(routeIdentifier, route);
+            ExpressData.instance.addRoute(routeIdentifier, route);
         };
     }
 
 }
 
 export function Get(route: string){
-    return SimpleExpressDecoratorHttpMethodFactory.create('get', route);
+    return ExpressDecoratorHttpMethodFactory.create('get', route);
 }
 
 export function Post(route: string){
-    return SimpleExpressDecoratorHttpMethodFactory.create('post', route);
+    return ExpressDecoratorHttpMethodFactory.create('post', route);
 }
 
 export function Put(route: string){
-    return SimpleExpressDecoratorHttpMethodFactory.create('put', route);
+    return ExpressDecoratorHttpMethodFactory.create('put', route);
 }
 
 export function Delete(route: string){
-    return SimpleExpressDecoratorHttpMethodFactory.create('delete', route);
+    return ExpressDecoratorHttpMethodFactory.create('delete', route);
 }
 
 export function Middleware(middleware: ExpressMiddleware){
@@ -43,6 +43,6 @@ export function Middleware(middleware: ExpressMiddleware){
             controller: controllerRoute,
             method: propertyKey
         };
-        SimpleExpressData.instance.addMiddleware(routeIdentifier, middleware);
+        ExpressData.instance.addMiddleware(routeIdentifier, middleware);
     };
 }
