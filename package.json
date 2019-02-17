@@ -1,6 +1,6 @@
 {
   "name": "simple-express-ts",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Express with typescript, no more no less",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
