@@ -50,7 +50,7 @@ export class SimpleExpressServer {
 
     private loadRoutes(){
         for (const { route, middlewares } of SimpleExpressData.instance.routes){
-            if (!route) throw new Error('Declared a method with middleware but without http verb');
+            if (!route) throw new Error('Declared a method in a controller with middleware but without http method');
             const { httpMethod, endpoint, action } = route;
             this._app[httpMethod](endpoint, ...middlewares || [], action).bind(this);
         }

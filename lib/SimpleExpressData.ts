@@ -63,6 +63,10 @@ export class SimpleExpressData {
         return this._routes;
     }
 
+    public clearRoutes(){
+        this._routes = [];
+    }
+
     private getRouteByIdentifier({ controller, method }: SimpleExpressRouteIdentifier){
         return this._routes.find(x =>
             x.routeIdentifier.controller === controller &&
