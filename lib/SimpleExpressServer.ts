@@ -1,4 +1,5 @@
 import express = require('express');
+import { SimpleExpressRoutes } from './SimpleExpressRoutes';
 
 /**
  * This is an abstract class for writing your express server class implementation
@@ -6,7 +7,6 @@ import express = require('express');
 export abstract class SimpleExpressServer {
 
     protected abstract middlewares: Array<(app: express.Express) => void>;
-    protected abstract controllers: any[];
 
     private _app: express.Express;
     private port: number;
@@ -16,10 +16,10 @@ export abstract class SimpleExpressServer {
         this.port = port;
         this._app = express();
         this.loadMiddlewares();
-        this.loadControllers();
+        this.loadRoutes();
     }
 
-    public start(onStart?: () => void): Promise<void>{
+    public async start(onStart?: () => void): Promise<void>{
         return new Promise(resolve => {
             this.server = this._app.listen(this.port, () => {
                 if (onStart) onStart();
@@ -38,12 +38,19 @@ export abstract class SimpleExpressServer {
         });
     }
 
+    public get app(){
+        return this._app;
+    }
+
     private loadMiddlewares(){
         // TODO
     }
 
-    private loadControllers(){
-        // TODO
+    private loadRoutes(){
+        for (const { httpMethod, endpoint, action } of SimpleExpressRoutes.instance.routes){
+            const middlewares: any[] = [];
+            this._app[httpMethod](endpoint, ...middlewares, action);
+        }
     }
 
 }
