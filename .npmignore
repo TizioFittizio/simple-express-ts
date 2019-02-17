@@ -1,5 +1,7 @@
 lib/
 tests/
+.vscode/
+coverage/
 .gitignore
 jest.config.js
 readme.md
