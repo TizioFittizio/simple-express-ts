@@ -11,9 +11,9 @@ export class SimpleExpressServer {
     private port: number;
     private server: any;
 
-    constructor(port: number, middlewares?: RequestHandler | RequestHandler[]){
+    constructor(port: number, ...middlewares: RequestHandler[]){
         this.port = port;
-        this.middlewares = middlewares ? Array.isArray(middlewares) ? middlewares : [middlewares] : [];
+        this.middlewares = middlewares;
         this._app = express();
         this.loadMiddlewares();
         this.loadRoutes();

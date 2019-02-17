@@ -2,7 +2,7 @@ import { SimpleExpressServer } from '../lib/SimpleExpressServer';
 import { SimpleExpressController } from '../lib/SimpleExpressController';
 import { Request, Response } from 'express';
 import * as request from 'supertest';
-import { Get, Post } from '../lib/SimpleExpressDecorators';
+import { Get, Post, Put, Delete } from '../lib/SimpleExpressDecorators';
 import bodyParser = require('body-parser');
 
 // tslint:disable:max-classes-per-file
@@ -49,12 +49,22 @@ describe('With a controller', () => {
             res.status(201).send(req.body);
         }
 
+        @Put('/testput/:id')
+        private async putTest(req: Request, res: Response){
+            res.send(req.params.id);
+        }
+
+        @Delete('/testdelete')
+        private async deleteTest(req: Request, res: Response){
+            res.send(req.query.id);
+        }
+
     }
 
     let server: SimpleExpressServer;
 
     beforeAll(async () => {
-        server = new SimpleExpressServer(1337, bodyParser.json());
+        server = new SimpleExpressServer(1337, bodyParser.urlencoded({ extended: true }), bodyParser.json());
         await server.start();
     });
 
@@ -72,7 +82,7 @@ describe('With a controller', () => {
             .end(done);
     });
 
-    it('should call post route correctly', done => {
+    it('should call post route correctly and obtain a body', done => {
         request(server.app)
             .post('/test/testpost')
             .send({ a: 1 })
@@ -80,6 +90,26 @@ describe('With a controller', () => {
                 expect(res.body.a).toBe(1);
             })
             .expect(201)
+            .end(done);
+    });
+
+    it('should call put route correctly and obtain a param', done => {
+        request(server.app)
+            .put('/test/testput/1')
+            .expect(res => {
+                expect(res.text).toBe('1');
+            })
+            .expect(200)
+            .end(done);
+    });
+
+    it('should call delete route correctly and obtain a query param', done => {
+        request(server.app)
+            .delete('/test/testdelete?id=1')
+            .expect(res => {
+                expect(res.text).toBe('1');
+            })
+            .expect(200)
             .end(done);
     });
 
