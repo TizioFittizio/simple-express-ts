@@ -1,5 +1,5 @@
 export abstract class ExpressController {
 
-    public abstract controllerRoute: string;
+    protected abstract controllerRoute: string;
 
 }

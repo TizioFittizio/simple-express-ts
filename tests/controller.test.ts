@@ -1,10 +1,10 @@
 import { ExpressController } from '../lib/ExpressController';
 import { Request, Response } from 'express';
 import { Get, Post, Put, Delete, Middleware } from '../lib/ExpressDecorators';
-import { ExpressServer } from '../lib/ExpressServer';
 import { ExpressData } from '../lib/ExpressData';
 import * as request from 'supertest';
 import bodyParser = require('body-parser');
+import { ExpressServer } from '../lib';
 
 class TestController extends ExpressController {
 
@@ -52,7 +52,10 @@ class TestController extends ExpressController {
 let server: ExpressServer;
 
 beforeAll(async () => {
-    server = new ExpressServer(3000, bodyParser.urlencoded({ extended: true }), bodyParser.json());
+    server = new ExpressServer.Builder(3000)
+        .setControllers(TestController)
+        .setMiddlewares(bodyParser.urlencoded({ extended: true }), bodyParser.json())
+        .build();
     await server.start();
 });
 

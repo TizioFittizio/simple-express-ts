@@ -17,5 +17,5 @@ class TestController extends ExpressController {
 }
 
 it('should throw starting server', async () => {
-    expect(() => new ExpressServer(4000)).toThrow();
+    expect(() => new ExpressServer.Builder(4000).setControllers(TestController).build()).toThrow();
 });

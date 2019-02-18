@@ -4,7 +4,7 @@ let started = false;
 let server: ExpressServer;
 
 beforeAll(async () => {
-    server = new ExpressServer(2000);
+    server = new ExpressServer.Builder(2000).build();
     await server.start(() => (started = true));
 });
 

@@ -1,8 +1,41 @@
 import express = require('express');
 import { RequestHandler } from 'express';
 import { ExpressData } from './ExpressData';
+import { ExpressController } from './ExpressController';
+
+// tslint:disable:max-classes-per-file
 
 export class ExpressServer {
+
+    // :/
+
+    public static Builder = class {
+
+        constructor(port: number){
+            ExpressServer.builderPort = port;
+            ExpressServer.builderControllers = [];
+            ExpressServer.builderMiddlewares = [];
+        }
+
+        public build(){
+            return new ExpressServer(ExpressServer.builderPort, ...ExpressServer.builderMiddlewares);
+        }
+
+        public setMiddlewares(...middlewares: RequestHandler[]){
+            ExpressServer.builderMiddlewares = middlewares;
+            return this;
+        }
+
+        public setControllers(...controllers: Array<new () => ExpressController>){
+            ExpressServer.builderControllers = controllers;
+            return this;
+        }
+
+    };
+
+    private static builderPort: number;
+    private static builderControllers: Array<new () => ExpressController>;
+    private static builderMiddlewares: RequestHandler[];
 
     private middlewares: RequestHandler[];
 
@@ -10,7 +43,7 @@ export class ExpressServer {
     private port: number;
     private server: any;
 
-    constructor(port: number, ...middlewares: RequestHandler[]){
+    private constructor(port: number, ...middlewares: RequestHandler[]){
         this.port = port;
         this.middlewares = middlewares;
         this._app = express();
