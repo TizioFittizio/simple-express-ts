@@ -3,6 +3,7 @@ tests/
 .vscode/
 .circleci/
 coverage/
+example/
 .gitignore
 jest.config.js
 readme.md
