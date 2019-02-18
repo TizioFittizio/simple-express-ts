@@ -1,6 +1,7 @@
 lib/
 tests/
 .vscode/
+.circleci/
 coverage/
 .gitignore
 jest.config.js
