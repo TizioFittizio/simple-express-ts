@@ -1,7 +1,7 @@
 node_modules/
-dist/
 coverage/
 .vscode/
+build/
 
 yarn.lock
 yarn-error.log
