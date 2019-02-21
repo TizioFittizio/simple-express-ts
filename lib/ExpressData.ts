@@ -49,7 +49,7 @@ export class ExpressData {
         const routeInData = this.getRouteByIdentifier(routeIdentifier);
         if (routeInData){
             if (!routeInData.middlewares) routeInData.middlewares = [];
-            routeInData.middlewares.push(middleware);
+            routeInData.middlewares.unshift(middleware);
         }
         else {
             this._routes.push({

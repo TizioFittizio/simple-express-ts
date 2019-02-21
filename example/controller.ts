@@ -18,10 +18,12 @@ export class Controller extends ExpressController {
 
     @Middleware((req: Request, res: Response, next: NextFunction) => {
         req.params.value = 5;
+        console.log(5);
         next();
     })
     @Middleware((req: Request, res: Response, next: NextFunction) => {
         req.params.value = 10;
+        console.log(10);
         next();
     })
     @Get('/testMiddleware')

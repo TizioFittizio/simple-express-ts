@@ -91,4 +91,3 @@ export class Controller extends ExpressController {
         res.send({ value }); // 10
     }
 ```
-Note that with more than one middleware, at the moment these will be executed in order from bottom to top
