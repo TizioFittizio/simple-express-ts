@@ -37,14 +37,18 @@ function Delete(route) {
     return ExpressDecoratorHttpMethodFactory.create('delete', route);
 }
 exports.Delete = Delete;
-function Middleware(middleware) {
+function Middleware() {
+    var middlewares = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        middlewares[_i] = arguments[_i];
+    }
     return function (target, propertyKey, descriptor) {
         var controllerRoute = target.constructor().controllerRoute;
         var routeIdentifier = {
             controller: controllerRoute,
             method: propertyKey
         };
-        ExpressData_1.ExpressData.instance.addMiddleware(routeIdentifier, middleware);
+        middlewares.forEach(function (x) { return ExpressData_1.ExpressData.instance.addMiddleware(routeIdentifier, x); });
     };
 }
 exports.Middleware = Middleware;
