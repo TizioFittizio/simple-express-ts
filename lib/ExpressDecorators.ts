@@ -36,13 +36,13 @@ export function Delete(route: string){
     return ExpressDecoratorHttpMethodFactory.create('delete', route);
 }
 
-export function Middleware(middleware: ExpressMiddleware){
+export function Middleware(...middlewares: ExpressMiddleware[]){
     return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
         const controllerRoute = target.constructor().controllerRoute;
         const routeIdentifier = {
             controller: controllerRoute,
             method: propertyKey
         };
-        ExpressData.instance.addMiddleware(routeIdentifier, middleware);
+        middlewares.forEach(x => ExpressData.instance.addMiddleware(routeIdentifier, x));
     };
 }

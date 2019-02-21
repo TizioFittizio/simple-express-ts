@@ -16,20 +16,32 @@ export class Controller extends ExpressController {
         res.send({id})
     }
 
-    @Middleware((req: Request, res: Response, next: NextFunction) => {
-        req.params.value = 5;
-        console.log(5);
-        next();
-    })
-    @Middleware((req: Request, res: Response, next: NextFunction) => {
-        req.params.value = 10;
-        console.log(10);
-        next();
-    })
-    @Get('/testMiddleware')
-    private async testMiddleware(req: Request, res: Response){
-        const { value } = req.params;
-        res.send({ value });
-    }
+    // @Middleware(
+    //     (req: Request, res: Response, next: NextFunction) => {
+    //         req.params.value = 5;
+    //         next();
+    //     },
+    //     (req: Request, res: Response, next: NextFunction) => {
+    //         req.params.value += 10;
+    //         next();
+    //     },
+    // )
+    // @Get('/testMiddleware')
+    // private async testMiddleware(req: Request, res: Response){
+    //     const { value } = req.params;
+    //     res.send({ value });
+    // }
+
+    // @Middleware([
+    //     (req: Request, res: Response, next: NextFunction) => {
+    //         req.params.value = 5;
+    //         next();
+    //     }
+    // )
+    // @Get('/testMiddleware')
+    // private async testMiddleware(req: Request, res: Response){
+    //     const { value } = req.params;
+    //     res.send({ value });
+    // }
 
 }
