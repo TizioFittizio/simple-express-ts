@@ -16,16 +16,11 @@ class TestController {
 let server: ExpressServer;
 
 beforeAll(async () => {
-    try {
-        server = new ExpressServer({
-            port: 7777,
-            controllers: [TestController]
-        });
-        await server.start();
-    }
-    catch (e){
-        console.error(e);
-    }
+    server = new ExpressServer({
+        port: 7777,
+        controllers: [TestController]
+    });
+    await server.start();
 });
 
 afterAll(async () => {

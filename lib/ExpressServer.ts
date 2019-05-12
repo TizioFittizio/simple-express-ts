@@ -60,7 +60,7 @@ export class ExpressServer {
             const middlewares = (instance.routesMiddlewares || [])
                 .filter((x: any) => x.propertyKey === propertyKey)
                 .map((x: any) => x.middleware);
-            (this._app as any)[httpMethod](`${baseUrl}${url}`, middlewares, () => method);
+            (this._app as any)[httpMethod](`${baseUrl}${url}`, middlewares, method);
         }
     }
 
