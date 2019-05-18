@@ -1,48 +1,40 @@
-import { ExpressData, HttpMethod, ExpressMiddleware } from './ExpressData';
+import { Request, Response, NextFunction } from 'express';
 
-class ExpressDecoratorHttpMethodFactory {
-
-    public static create(httpMethod: HttpMethod, routeEndpoint: string){
-        return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-            const controllerRoute = target.constructor().controllerRoute;
-            const routeIdentifier = {
-                controller: controllerRoute,
-                method: propertyKey
-            };
-            const route = {
-                httpMethod,
-                endpoint: `${controllerRoute}${routeEndpoint}`,
-                action: descriptor.value
-            };
-            ExpressData.instance.addRoute(routeIdentifier, route);
-        };
-    }
-
-}
-
-export function Get(route: string){
-    return ExpressDecoratorHttpMethodFactory.create('get', route);
-}
-
-export function Post(route: string){
-    return ExpressDecoratorHttpMethodFactory.create('post', route);
-}
-
-export function Put(route: string){
-    return ExpressDecoratorHttpMethodFactory.create('put', route);
-}
-
-export function Delete(route: string){
-    return ExpressDecoratorHttpMethodFactory.create('delete', route);
-}
-
-export function Middleware(middleware: ExpressMiddleware){
-    return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
-        const controllerRoute = target.constructor().controllerRoute;
-        const routeIdentifier = {
-            controller: controllerRoute,
-            method: propertyKey
-        };
-        ExpressData.instance.addMiddleware(routeIdentifier, middleware);
+export const ExpressController = (baseUrl: string) => {
+    return (constructor: Function) => {
+        constructor.prototype.baseUrl = baseUrl;
+        for (const route of constructor.prototype.routes){
+            route.method = constructor.prototype[route.propertyKey];
+        }
     };
-}
+};
+
+export const Get = (url: string) => httpMethodDecoratorFactory('get')(url);
+export const Post = (url: string) => httpMethodDecoratorFactory('post')(url);
+export const Put = (url: string) => httpMethodDecoratorFactory('put')(url);
+export const Delete = (url: string) => httpMethodDecoratorFactory('delete')(url);
+export const Patch = (url: string) => httpMethodDecoratorFactory('patch')(url);
+export const Options = (url: string) => httpMethodDecoratorFactory('options')(url);
+
+export const Middleware = (...middlewares: Array<(req: Request, res: Response, next: NextFunction) => void>) => {
+    return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+        if (!target.routesMiddlewares) target.routesMiddlewares = [];
+        for (const middleware of middlewares){
+            target.routesMiddlewares.push({
+                propertyKey,
+                middleware
+            });
+        }
+    };
+};
+
+const httpMethodDecoratorFactory = (httpMethod: string) => (url: string) => {
+    return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+        if (!target.routes) target.routes = [];
+        target.routes.push({
+            propertyKey,
+            url,
+            httpMethod
+        });
+    };
+};

@@ -32,7 +32,9 @@
         "curly": false,
         "max-union-size": false,
         "interface-name": false,
-        "variable-name": false
+        "variable-name": false,
+        "ban-types": false,
+        "new-parens": false
     },
     "rulesDirectory": []
 }
