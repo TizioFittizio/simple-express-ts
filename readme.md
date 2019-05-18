@@ -32,9 +32,8 @@ Controller class:
 import { ExpressController, Get } from 'simple-express-ts';
 import { Request, Response } from 'express';
 
-export class Controller extends ExpressController {
-
-    public controllerRoute: string = '/controller';
+@ExpressController('/controller')
+export class Controller {
 
     @Get('/test')
     private async testRoute(req: Request, res: Response){
@@ -48,9 +47,10 @@ Index file:
 import { ExpressServer } from 'simple-express-ts';
 import { Controller } from './controller';
 
-const server = new ExpressServer.Builder(3000)
-    .setControllers(Controller)
-    .build();
+const server = new ExpressServer({
+    port: 7777,
+    controllers: [Controller]
+});
 server.start();
 ```
 Running your compiled index at this point, you should be able to obtain an OK response on http://localhost:3000/controller/test
@@ -62,13 +62,11 @@ import { ExpressServer } from 'simple-express-ts';
 import { Controller } from './controller';
 import bodyParser = require('body-parser');
 
-const server = new ExpressServer.Builder(3000)
-    .setControllers(Controller)
-    .setMiddlewares(
-        bodyParser.json(),
-        bodyParser.urlencoded({extended: true})
-    )
-    .build();
+const server = new ExpressServer({
+    port: 3000,
+    controllers: [Controller],
+    middlewares: [bodyParser.json(), bodyParser.urlencoded({ extended: true })]
+});
 server.start();
 ```
 
@@ -77,17 +75,18 @@ server.start();
 import { ExpressController, Get, Middleware } from 'simple-express-ts';
 import { Request, Response, NextFunction } from 'express';
 
-export class Controller extends ExpressController {
-
-    public controllerRoute: string = '/controller';
+@ExpressController('/controller')
+export class Controller {
 
     @Middleware((req: Request, res: Response, next: NextFunction) => {
-        req.params.value = 10;
+        req.params.value = 'Ulp!';
         next();
     })
     @Get('/testMiddleware')
     private async testMiddleware(req: Request, res: Response){
         const { value } = req.params;
-        res.send({ value }); // 10
+        res.send({ value }); // Ulp!
     }
+
+}
 ```
