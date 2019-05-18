@@ -45,7 +45,7 @@ export class ExpressServer {
     }
 
     private loadMiddlewares(){
-        // TODO
+        for (const middleware of this.options.middlewares || []) this._app.use(middleware);
     }
 
     private loadControllers(){
