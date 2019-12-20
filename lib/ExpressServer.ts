@@ -1,34 +1,30 @@
 import * as express from 'express';
+import * as https from 'https';
 
-export interface ExpressServerOptions {
+export interface ExpressServerValues {
     port: number;
     controllers: any[];
     middlewares?: any[];
+    httpsOptions?: https.ServerOptions;
 }
 
 export class ExpressServer {
 
-    private options: ExpressServerOptions;
+    private values: ExpressServerValues;
 
     private _app: express.Express;
     private server: any;
 
-    public constructor(options: ExpressServerOptions){
-        this.options = options;
+    public constructor(values: ExpressServerValues){
+        this.values = values;
         this._app = express();
         this.loadMiddlewares();
         this.loadControllers();
     }
 
     public async start(onStart?: () => void): Promise<void>{
-        const { port } = this.options;
-        return new Promise(resolve => {
-            this.server = this._app.listen(port, () => {
-                if (onStart) onStart();
-                else console.log(`Server started on port ${port}`);
-                resolve();
-            });
-        });
+        if (this.values.httpsOptions) await this.startHttpsServer(onStart);
+        else await this.startHttpServer(onStart);
     }
 
     public async stop(onStop?: () => void): Promise<void>{
@@ -44,12 +40,35 @@ export class ExpressServer {
         return this._app;
     }
 
+    private async startHttpsServer(onStart?: () => void){
+        const { httpsOptions, port } = this.values;
+        this.server = https.createServer(httpsOptions!, this._app);
+        return new Promise(resolve => {
+            this.server.listen(port, () => {
+                if (onStart) onStart();
+                else console.log(`Https Server started on port ${port}`);
+                resolve();
+            });
+        });
+    }
+
+    private async startHttpServer(onStart?: () => void){
+        const { port } = this.values;
+        return new Promise(resolve => {
+            this.server = this._app.listen(port, () => {
+                if (onStart) onStart();
+                else console.log(`Http Server started on port ${port}`);
+                resolve();
+            });
+        });
+    }
+
     private loadMiddlewares(){
-        for (const middleware of this.options.middlewares || []) this._app.use(middleware);
+        for (const middleware of this.values.middlewares || []) this._app.use(middleware);
     }
 
     private loadControllers(){
-        for (const controller of this.options.controllers) this.loadController(controller);
+        for (const controller of this.values.controllers) this.loadController(controller);
     }
 
     private loadController(controller: any){

@@ -86,30 +86,30 @@ class TestController {
 
 }
 
-let server: ExpressServer;
+let httpServer: ExpressServer;
 
 beforeAll(async () => {
-    server = new ExpressServer({
+    httpServer = new ExpressServer({
         port: 7777,
         controllers: [TestController],
         middlewares: [bodyParser.json(), bodyParser.urlencoded({ extended: true })]
     });
-    await server.start();
+    await httpServer.start();
 });
 
 afterAll(async () => {
-    await server.stop();
+    await httpServer.stop();
 });
 
 it('should be able to perform basic get', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/test1')
         .expect(204)
         .end(done);
 });
 
 it('should be able to obtain controller variables', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/test2')
         .expect(res => {
             expect(res.text).toBe('7');
@@ -119,7 +119,7 @@ it('should be able to obtain controller variables', done => {
 });
 
 it('should be able to use controller methods', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/test3')
         .expect(res => {
             expect(res.text).toBe('!');
@@ -129,7 +129,7 @@ it('should be able to use controller methods', done => {
 });
 
 it('should be able to perform basic post', done => {
-    request(server.app)
+    request(httpServer.app)
         .post('/test/testpost')
         .send({ a: 1 })
         .expect(res => {
@@ -140,7 +140,7 @@ it('should be able to perform basic post', done => {
 });
 
 it('should be able to perform basic put', done => {
-    request(server.app)
+    request(httpServer.app)
         .put('/test/testput/1')
         .expect(res => {
             expect(res.text).toBe('1');
@@ -150,7 +150,7 @@ it('should be able to perform basic put', done => {
 });
 
 it('should be able to perform basic delete', done => {
-    request(server.app)
+    request(httpServer.app)
         .delete('/test/testdelete/1')
         .set('x-custom', 'aaa')
         .expect(res => {
@@ -161,7 +161,7 @@ it('should be able to perform basic delete', done => {
 });
 
 it('should execute middleware correctly', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/testmiddleware')
         .expect(res => {
             expect(res.text).toBe('1');
@@ -171,14 +171,14 @@ it('should execute middleware correctly', done => {
 });
 
 it('should execute middleware correctly (2)', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/testmiddleware2')
         .expect(419)
         .end(done);
 });
 
 it('should execute multiple middlewares correctly', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/testmiddleware3')
         .expect(res => {
             expect(res.text).toBe('17');

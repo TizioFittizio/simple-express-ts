@@ -2,6 +2,10 @@ node_modules/
 coverage/
 .vscode/
 build/
+certificates/
+dist/
 
 *.lock
 *.log
+*.crt
+*.key
