@@ -1,4 +1,4 @@
-import { ExpressController, Get, Post, Middleware } from 'simple-express-ts';
+import { ExpressController, Get, Post, Middleware } from '../lib';
 import { Request, Response, NextFunction } from 'express';
 
 @ExpressController('/controller')
