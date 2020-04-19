@@ -16,10 +16,10 @@ class TestController {
 let httpsServer: ExpressServer;
 const sslCertificateManager = new SSLCertificateManager();
 
-beforeAll(async () => {
+beforeAll(async (done) => {
     sslCertificateManager.generate();
     httpsServer = new ExpressServer({
-        httpsPort: 37777,
+        httpsPort: 27777,
         controllers: [TestController],
         httpsOptions: { 
             key: sslCertificateManager.readKey(),
@@ -27,11 +27,13 @@ beforeAll(async () => {
         }
     });
     await httpsServer.start();
+    done();
 });
 
-afterAll(async () => {
+afterAll(async (done) => {
     await httpsServer.stop();
     sslCertificateManager.delete();
+    done();
 });
 
 it('should be able to perform basic get', done => {
