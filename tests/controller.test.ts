@@ -1,4 +1,4 @@
-import { ExpressController, Get, Middleware, Post, Put, Delete } from '../lib/ExpressDecorators';
+import { ExpressController, Get, Middleware, Post, Put, Delete, Patch, Options } from '../lib/ExpressDecorators';
 import { ExpressServer } from '../lib/ExpressServer';
 import { Request, Response, NextFunction } from 'express';
 import * as request from 'supertest';
@@ -84,6 +84,16 @@ class TestController {
         return value;
     }
 
+    @Patch('/testpatch')
+    private testPatch(req: Request, res: Response){
+        res.sendStatus(204);
+    }
+
+    @Options('/testoptions')
+    private testOptions(req: Request, res: Response){
+        res.sendStatus(204);
+    }
+
 }
 
 let httpServer: ExpressServer;
@@ -103,7 +113,7 @@ afterAll(async (done) => {
     done();
 });
 
-it('should be able to perform basic get', done => {
+it('should be able to perform get requests', done => {
     request(httpServer.app)
         .get('/test/test1')
         .expect(204)
@@ -130,7 +140,7 @@ it('should be able to use controller methods', done => {
         .end(done);
 });
 
-it('should be able to perform basic post', done => {
+it('should be able to perform post requests', done => {
     request(httpServer.app)
         .post('/test/testpost')
         .send({ a: 1 })
@@ -141,7 +151,7 @@ it('should be able to perform basic post', done => {
         .end(done);
 });
 
-it('should be able to perform basic put', done => {
+it('should be able to perform put requests', done => {
     request(httpServer.app)
         .put('/test/testput/1')
         .expect(res => {
@@ -151,7 +161,7 @@ it('should be able to perform basic put', done => {
         .end(done);
 });
 
-it('should be able to perform basic delete', done => {
+it('should be able to perform delete requests', done => {
     request(httpServer.app)
         .delete('/test/testdelete/1')
         .set('x-custom', 'aaa')
@@ -186,5 +196,19 @@ it('should execute multiple middlewares correctly', done => {
             expect(res.text).toBe('17');
         })
         .expect(200)
+        .end(done);
+});
+
+it('should be able to perform patch request correctly', done => {
+    request(httpServer.app)
+        .patch('/test/testpatch')
+        .expect(204)
+        .end(done);
+});
+
+it('should be able to perform options request correctly', done => {
+    request(httpServer.app)
+        .options('/test/testoptions')
+        .expect(204)
         .end(done);
 });

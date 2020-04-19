@@ -22,3 +22,12 @@ it('should be able to start http and https server', async () => {
     await server.stop();
 });
 
+it('should not throw when stopping unstarted server', async () => {
+    let serverStopped = false;
+    const server = new ExpressServer({
+        controllers: [],
+        port: 6262
+    });
+    await server.stop(() => serverStopped = true);
+    expect(serverStopped).toBeTruthy();
+});
