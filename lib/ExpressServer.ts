@@ -2,9 +2,10 @@ import * as express from 'express';
 import * as https from 'https';
 
 export interface ExpressServerValues {
-    port: number;
     controllers: any[];
     middlewares?: any[];
+    httpPort?: number;
+    httpsPort?: number;
     httpsOptions?: https.ServerOptions;
 }
 
@@ -41,34 +42,34 @@ export class ExpressServer {
     }
 
     private async startHttpsServer(onStart?: () => void){
-        const { httpsOptions, port } = this.values;
+        const { httpsOptions, httpsPort } = this.values;
         this.server = https.createServer(httpsOptions!, this._app);
         return new Promise(resolve => {
-            this.server.listen(port, () => {
+            this.server.listen(httpsPort, () => {
                 if (onStart) onStart();
-                else console.log(`Https Server started on port ${port}`);
+                else console.log(`Https Server started on port ${httpsPort}`);
                 resolve();
             });
         });
     }
 
     private async startHttpServer(onStart?: () => void){
-        const { port } = this.values;
+        const { httpPort } = this.values;
         return new Promise(resolve => {
-            this.server = this._app.listen(port, () => {
+            this.server = this._app.listen(httpPort, () => {
                 if (onStart) onStart();
-                else console.log(`Http Server started on port ${port}`);
+                else console.log(`Http Server started on port ${httpPort}`);
                 resolve();
             });
         });
     }
 
     private loadMiddlewares(){
-        for (const middleware of this.values.middlewares || []) this._app.use(middleware);
+        (this.values.middlewares || []).forEach(middleware => this._app.use(middleware));
     }
 
     private loadControllers(){
-        for (const controller of this.values.controllers) this.loadController(controller);
+        this.values.controllers.forEach(controller => this.loadController(controller));
     }
 
     private loadController(controller: any){

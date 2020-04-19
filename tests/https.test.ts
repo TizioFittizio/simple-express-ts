@@ -19,7 +19,7 @@ const sslCertificateManager = new SSLCertificateManager();
 beforeAll(async () => {
     sslCertificateManager.generate();
     httpsServer = new ExpressServer({
-        port: 37777,
+        httpsPort: 37777,
         controllers: [TestController],
         httpsOptions: { 
             key: sslCertificateManager.readKey(),

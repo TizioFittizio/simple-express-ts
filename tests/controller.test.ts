@@ -88,17 +88,19 @@ class TestController {
 
 let httpServer: ExpressServer;
 
-beforeAll(async () => {
+beforeAll(async (done) => {
     httpServer = new ExpressServer({
-        port: 7777,
+        httpPort: 7777,
         controllers: [TestController],
         middlewares: [bodyParser.json(), bodyParser.urlencoded({ extended: true })]
     });
     await httpServer.start();
+    done();
 });
 
-afterAll(async () => {
+afterAll(async (done) => {
     await httpServer.stop();
+    done();
 });
 
 it('should be able to perform basic get', done => {

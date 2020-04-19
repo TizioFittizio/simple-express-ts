@@ -6,7 +6,7 @@ import { SSLCertificateManager } from '../helpers/SSLCertificateManager';
 const USE_HTTPS = true;
 
 const expressServerValues: ExpressServerValues = {
-    port: 3000,
+    httpPort: 3000,
     controllers: [Controller],
     middlewares: [bodyParser.json(), bodyParser.urlencoded({ extended: true })]
 }
