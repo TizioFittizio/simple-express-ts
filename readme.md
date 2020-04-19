@@ -70,6 +70,26 @@ const server = new ExpressServer({
 server.start();
 ```
 
+## Using middlewares on controllers
+```ts
+import { ExpressController, ExpressControllerMiddleware, Get } from 'simple-express-ts';
+import { Request, Response, NextFunction } from 'express';
+
+@ExpressController('/controller')
+@ExpressControllerMiddleware((req: Request, res: Response, next: NextFunction) => {
+    if (req.query.code !== '12345') res.sendStatus(401);
+    else next();
+})
+export class Controller {
+
+    @Get('/secret')
+    private getSecret(req: Request, res: Response){
+        res.send('Secret!');
+    }
+
+}
+```
+
 ## Using middlewares on routes
 ```ts
 import { ExpressController, Get, Middleware } from 'simple-express-ts';
