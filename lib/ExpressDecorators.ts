@@ -14,6 +14,16 @@ export const ExpressController = (baseUrl: string) => {
 };
 
 /**
+ * Decorator for express middlewares, these will be executed before every route of the controller
+ * @param middlewares Middlewares to use
+ */
+export const ExpressControllerMiddleware = (...middlewares: Array<(req: Request, res: Response, next: NextFunction) => void>) => {
+    return (constructor: Function) => {
+        constructor.prototype.controllerMiddlewares = middlewares;
+    }
+}
+
+/**
  * Decorator for express GET route
  * @param url Route URL
  */

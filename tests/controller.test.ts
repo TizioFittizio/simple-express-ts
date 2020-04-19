@@ -1,4 +1,14 @@
-import { ExpressController, Get, Middleware, Post, Put, Delete, Patch, Options } from '../lib/ExpressDecorators';
+import { 
+    ExpressController, 
+    Get, 
+    Middleware, 
+    Post, 
+    Put, 
+    Delete, 
+    Patch, 
+    Options, 
+    ExpressControllerMiddleware 
+} from '../lib/ExpressDecorators';
 import { ExpressServer } from '../lib/ExpressServer';
 import { Request, Response, NextFunction } from 'express';
 import * as request from 'supertest';
@@ -12,6 +22,11 @@ const createMiddleware = (callback: (req: Request, res: Response) => void) => {
 };
 
 @ExpressController('/test')
+@ExpressControllerMiddleware((req: Request, res: Response, next: NextFunction) => {
+    (req as any).controllerMiddleware = true;
+    (req as any).middlewareTestArray = [2];
+    next();
+})
 class TestController {
 
     private value: string;
@@ -84,14 +99,18 @@ class TestController {
         return value;
     }
 
-    @Patch('/testpatch')
-    private testPatch(req: Request, res: Response){
-        res.sendStatus(204);
+    @Options('/testcontrollermiddleware')
+    private testControllerMiddleware(req: Request, res: Response){
+        res.send((req as any).controllerMiddleware);
     }
 
-    @Options('/testoptions')
-    private testOptions(req: Request, res: Response){
-        res.sendStatus(204);
+    @Patch('/testallmiddleware')
+    @Middleware((req: Request, res: Response, next: NextFunction) => {
+        (req as any).middlewareTestArray.push(4);
+        next();
+    })
+    private allMiddlewareTest(req: Request, res: Response){
+        res.send((req as any).middlewareTestArray.join(''));
     }
 
 }
@@ -199,16 +218,21 @@ it('should execute multiple middlewares correctly', done => {
         .end(done);
 });
 
-it('should be able to perform patch request correctly', done => {
+it('should execute controller middleware correctly', done => {
     request(httpServer.app)
-        .patch('/test/testpatch')
-        .expect(204)
+        .options('/test/testcontrollermiddleware')
+        .expect(res => {
+            expect(res.text).toBe('true');
+        })
         .end(done);
 });
 
-it('should be able to perform options request correctly', done => {
+it('should execute controller and route middlewares in correct order', done => {
     request(httpServer.app)
-        .options('/test/testoptions')
-        .expect(204)
+        .patch('/test/testallmiddleware')
+        .expect(res => {
+            expect(res.text).toBe('24');
+        })
         .end(done);
 });
+

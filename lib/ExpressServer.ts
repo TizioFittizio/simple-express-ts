@@ -109,12 +109,13 @@ export class ExpressServer {
 
     private loadController(controller: any){
         const instance = new controller();
-        const { baseUrl } = instance;
-        for (const route of instance.routes || []){
+        const { baseUrl, routes, routesMiddlewares, controllerMiddlewares } = instance;
+        for (const route of routes || []){
             const { propertyKey, url, httpMethod, method } = route;
-            const middlewares = (instance.routesMiddlewares || [])
+            const routeMiddlewares = (routesMiddlewares || [])
                 .filter((x: any) => x.propertyKey === propertyKey)
                 .map((x: any) => x.middleware);
+            const middlewares = [...(controllerMiddlewares || []), ...routeMiddlewares];
             (this._app as any)[httpMethod](`${baseUrl}${url}`, middlewares, method.bind(instance));
         }
     }
