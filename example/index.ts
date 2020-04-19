@@ -18,6 +18,7 @@ if (USE_HTTPS){
         cert: sslCertificateManager.readCertificate(),
         key: sslCertificateManager.readKey()
     }
+    expressServerValues.httpsPort = 3001;
 }
 
 const server = new ExpressServer(expressServerValues);

@@ -1,17 +1,27 @@
 import * as express from 'express';
 import * as https from 'https';
 
+/** Interface for ExpressServer constructor values */
 export interface ExpressServerValues {
+    /** Controllers to mount, controlles must be classes using the ExpressController decorator  */
     controllers: any[];
+    /** Express middlewares to mount, these will be loaded before controllers */
     middlewares?: any[];
+    /** Port to listen with http, if you are using https too you may want to use `httpPort` which produce the same effect but is clearer */
     port?: number;
+    /** Port to listen with http, if `port` is specified this will be ignored */
     httpPort?: number;
+    /** Port to listen with https */
     httpsPort?: number;
+    /** Custom callback for when express starts to listen with http */
     onHttpServerStarted?: () => void;
+    /** Custom callback for when express starts to listen with https */
     onHttpsServerStarted?: () => void;
+    /** Https options */
     httpsOptions?: https.ServerOptions;
 }
 
+/** Express Server wrapper, to create using `ExpressServerValues` interface */
 export class ExpressServer {
 
     private values: ExpressServerValues;
@@ -28,12 +38,19 @@ export class ExpressServer {
         this.loadControllers();
     }
 
+    /**
+     * Start listening with http and/or https
+     */
     public async start(): Promise<void> {
         const { port, httpPort, httpsPort } = this.values;
         if (httpsPort) await this.startHttpsServer();
         if (port || httpPort) await this.startHttpServer();
     }
 
+    /**
+     * Stop listening with http and/or https
+     * @param onStop Custom callback on server stopped
+     */
     public async stop(onStop?: () => void): Promise<void>{
         return new Promise(async (resolve) => {
             if (!this.httpServer && !this.httpsServer){
@@ -52,6 +69,9 @@ export class ExpressServer {
         });
     }
 
+    /**
+     * Return the express app
+     */
     public get app(){
         return this._app;
     }
