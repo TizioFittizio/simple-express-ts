@@ -21,7 +21,7 @@ beforeAll(async (done) => {
     httpsServer = new ExpressServer({
         httpsPort: 27777,
         controllers: [TestController],
-        httpsOptions: { 
+        httpsOptions: {
             key: sslCertificateManager.readKey(),
             cert: sslCertificateManager.readCertificate()
         }

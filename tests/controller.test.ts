@@ -1,13 +1,13 @@
-import { 
-    ExpressController, 
-    Get, 
-    Middleware, 
-    Post, 
-    Put, 
-    Delete, 
-    Patch, 
-    Options, 
-    ExpressControllerMiddleware 
+import {
+    ExpressController,
+    Get,
+    Middleware,
+    Post,
+    Put,
+    Delete,
+    Patch,
+    Options,
+    ExpressControllerMiddleware
 } from '../lib/ExpressDecorators';
 import { ExpressServer } from '../lib/ExpressServer';
 import { Request, Response, NextFunction } from 'express';
@@ -235,4 +235,3 @@ it('should execute controller and route middlewares in correct order', done => {
         })
         .end(done);
 });
-

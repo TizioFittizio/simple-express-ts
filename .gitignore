@@ -3,7 +3,6 @@ coverage/
 .vscode/
 build/
 certificates/
-dist/
 
 *.log
 *.crt

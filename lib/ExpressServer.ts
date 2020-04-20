@@ -7,7 +7,10 @@ export interface ExpressServerValues {
     controllers: any[];
     /** Express middlewares to mount, these will be loaded before controllers */
     middlewares?: any[];
-    /** Port to listen with http, if you are using https too you may want to use `httpPort` which produce the same effect but is clearer */
+    /** Port to listen with http
+     *
+     *  If you are using https too you may want to use `httpPort` which produce the same effect but is clearer
+     */
     port?: number;
     /** Port to listen with http, if `port` is specified this will be ignored */
     httpPort?: number;
