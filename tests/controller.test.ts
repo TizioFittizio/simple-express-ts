@@ -1,4 +1,14 @@
-import { ExpressController, Get, Middleware, Post, Put, Delete } from '../lib/ExpressDecorators';
+import { 
+    ExpressController, 
+    Get, 
+    Middleware, 
+    Post, 
+    Put, 
+    Delete, 
+    Patch, 
+    Options, 
+    ExpressControllerMiddleware 
+} from '../lib/ExpressDecorators';
 import { ExpressServer } from '../lib/ExpressServer';
 import { Request, Response, NextFunction } from 'express';
 import * as request from 'supertest';
@@ -12,6 +22,11 @@ const createMiddleware = (callback: (req: Request, res: Response) => void) => {
 };
 
 @ExpressController('/test')
+@ExpressControllerMiddleware((req: Request, res: Response, next: NextFunction) => {
+    (req as any).controllerMiddleware = true;
+    (req as any).middlewareTestArray = [2];
+    next();
+})
 class TestController {
 
     private value: string;
@@ -84,32 +99,48 @@ class TestController {
         return value;
     }
 
+    @Options('/testcontrollermiddleware')
+    private testControllerMiddleware(req: Request, res: Response){
+        res.send((req as any).controllerMiddleware);
+    }
+
+    @Patch('/testallmiddleware')
+    @Middleware((req: Request, res: Response, next: NextFunction) => {
+        (req as any).middlewareTestArray.push(4);
+        next();
+    })
+    private allMiddlewareTest(req: Request, res: Response){
+        res.send((req as any).middlewareTestArray.join(''));
+    }
+
 }
 
-let server: ExpressServer;
+let httpServer: ExpressServer;
 
-beforeAll(async () => {
-    server = new ExpressServer({
-        port: 7777,
+beforeAll(async (done) => {
+    httpServer = new ExpressServer({
+        httpPort: 7777,
         controllers: [TestController],
         middlewares: [bodyParser.json(), bodyParser.urlencoded({ extended: true })]
     });
-    await server.start();
+    await httpServer.start();
+    done();
 });
 
-afterAll(async () => {
-    await server.stop();
+afterAll(async (done) => {
+    await httpServer.stop();
+    done();
 });
 
-it('should be able to perform basic get', done => {
-    request(server.app)
+it('should be able to perform get requests', done => {
+    request(httpServer.app)
         .get('/test/test1')
         .expect(204)
         .end(done);
 });
 
 it('should be able to obtain controller variables', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/test2')
         .expect(res => {
             expect(res.text).toBe('7');
@@ -119,7 +150,7 @@ it('should be able to obtain controller variables', done => {
 });
 
 it('should be able to use controller methods', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/test3')
         .expect(res => {
             expect(res.text).toBe('!');
@@ -128,8 +159,8 @@ it('should be able to use controller methods', done => {
         .end(done);
 });
 
-it('should be able to perform basic post', done => {
-    request(server.app)
+it('should be able to perform post requests', done => {
+    request(httpServer.app)
         .post('/test/testpost')
         .send({ a: 1 })
         .expect(res => {
@@ -139,8 +170,8 @@ it('should be able to perform basic post', done => {
         .end(done);
 });
 
-it('should be able to perform basic put', done => {
-    request(server.app)
+it('should be able to perform put requests', done => {
+    request(httpServer.app)
         .put('/test/testput/1')
         .expect(res => {
             expect(res.text).toBe('1');
@@ -149,8 +180,8 @@ it('should be able to perform basic put', done => {
         .end(done);
 });
 
-it('should be able to perform basic delete', done => {
-    request(server.app)
+it('should be able to perform delete requests', done => {
+    request(httpServer.app)
         .delete('/test/testdelete/1')
         .set('x-custom', 'aaa')
         .expect(res => {
@@ -161,7 +192,7 @@ it('should be able to perform basic delete', done => {
 });
 
 it('should execute middleware correctly', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/testmiddleware')
         .expect(res => {
             expect(res.text).toBe('1');
@@ -171,14 +202,14 @@ it('should execute middleware correctly', done => {
 });
 
 it('should execute middleware correctly (2)', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/testmiddleware2')
         .expect(419)
         .end(done);
 });
 
 it('should execute multiple middlewares correctly', done => {
-    request(server.app)
+    request(httpServer.app)
         .get('/test/testmiddleware3')
         .expect(res => {
             expect(res.text).toBe('17');
@@ -186,3 +217,22 @@ it('should execute multiple middlewares correctly', done => {
         .expect(200)
         .end(done);
 });
+
+it('should execute controller middleware correctly', done => {
+    request(httpServer.app)
+        .options('/test/testcontrollermiddleware')
+        .expect(res => {
+            expect(res.text).toBe('true');
+        })
+        .end(done);
+});
+
+it('should execute controller and route middlewares in correct order', done => {
+    request(httpServer.app)
+        .patch('/test/testallmiddleware')
+        .expect(res => {
+            expect(res.text).toBe('24');
+        })
+        .end(done);
+});
+

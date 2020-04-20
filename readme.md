@@ -7,7 +7,7 @@ Dev | [![CircleCI](https://circleci.com/gh/TizioFittizio/simple-express-ts/tree/
 
 `simple-express-ts` is a wrapper for express with typescript decorators, and that's all, no additional dependencies.
 
-I wrote this to avoid using huge frameworks that allow to do the same while having 6397 features that sometimes I don't need at all.
+I wrote this to avoid using huge frameworks that allow to do the same while having billions features that sometimes I don't need at all.
 
 ## Install
 
@@ -70,6 +70,26 @@ const server = new ExpressServer({
 server.start();
 ```
 
+## Using middlewares on controllers
+```ts
+import { ExpressController, ExpressControllerMiddleware, Get } from 'simple-express-ts';
+import { Request, Response, NextFunction } from 'express';
+
+@ExpressController('/controller')
+@ExpressControllerMiddleware((req: Request, res: Response, next: NextFunction) => {
+    if (req.query.code !== '12345') res.sendStatus(401);
+    else next();
+})
+export class Controller {
+
+    @Get('/secret')
+    private getSecret(req: Request, res: Response){
+        res.send('Secret!');
+    }
+
+}
+```
+
 ## Using middlewares on routes
 ```ts
 import { ExpressController, Get, Middleware } from 'simple-express-ts';
@@ -89,4 +109,21 @@ export class Controller {
     }
 
 }
+```
+
+## Using HTTPS
+```ts
+import { ExpressServer } from 'simple-express-ts';
+import { Controller } from './controller';
+
+const server = new ExpressServer({
+    httpPort: 3000,
+    httpsPort: 3001,
+    controllers: [Controller],
+    httpsOptions: {
+        cert: 'Your certificate here',
+        key: 'Your key here'
+    }
+});
+server.start();
 ```
