@@ -5,6 +5,7 @@ build/
 .circleci/
 coverage/
 example/
+helpers/
 .gitignore
 jest.config.js
 readme.md
