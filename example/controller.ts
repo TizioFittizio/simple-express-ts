@@ -23,7 +23,7 @@ export class Controller {
 
     @Middleware(
         (req: Request, res: Response, next: NextFunction) => {
-            req.params.value = 5;
+            req.params.value = '5';
             next();
         },
         (req: Request, res: Response, next: NextFunction) => {
@@ -39,7 +39,7 @@ export class Controller {
 
     @Middleware(
         (req: Request, res: Response, next: NextFunction) => {
-            req.params.value = 5;
+            req.params.value = '5';
             next();
         }
     )
